@@ -1,4 +1,4 @@
-package coolsquid.properties.config;
+package coolsquid.properties.config.handler;
 
 import java.util.List;
 
@@ -9,6 +9,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
+import coolsquid.properties.config.ConfigException;
+import coolsquid.properties.config.ConfigHandler;
+import coolsquid.properties.config.ConfigUtil;
 import coolsquid.properties.util.ModEventHandler;
 
 import com.typesafe.config.Config;
@@ -29,6 +32,18 @@ public class BlockHandler implements ConfigHandler<Block> {
 			}
 			case "localization_key": {
 				e.setUnlocalizedName(value);
+				break;
+			}
+			default:
+				throw new ConfigException("Property %s was not found", key);
+		}
+	}
+
+	@Override
+	public void handleBoolean(Block e, String key, boolean value) {
+		switch (key) {
+			case "clear_drops": {
+				ModEventHandler.REMOVE_ALL_BLOCK_DROPS.add(e);
 				break;
 			}
 			default:

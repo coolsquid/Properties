@@ -1,9 +1,13 @@
-package coolsquid.properties.config;
+package coolsquid.properties.config.handler;
 
 import java.util.List;
 
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
+
+import coolsquid.properties.config.ConfigException;
+import coolsquid.properties.config.ConfigHandler;
+import coolsquid.properties.config.ConfigUtil;
 
 import com.typesafe.config.Config;
 

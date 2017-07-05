@@ -6,9 +6,9 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-import coolsquid.properties.config.BlockHandler;
 import coolsquid.properties.config.ConfigManager;
-import coolsquid.properties.config.ItemHandler;
+import coolsquid.properties.config.handler.BlockHandler;
+import coolsquid.properties.config.handler.ItemHandler;
 import coolsquid.properties.util.ModEventHandler;
 
 import org.apache.logging.log4j.LogManager;

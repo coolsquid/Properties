@@ -9,7 +9,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
-import coolsquid.properties.util.HoconUtil;
 import coolsquid.properties.util.ModEventHandler;
 
 import com.typesafe.config.Config;
@@ -19,6 +18,22 @@ public class BlockHandler implements ConfigHandler<Block> {
 	@Override
 	public Block getElement(String key) {
 		return Block.REGISTRY.getObject(new ResourceLocation(key));
+	}
+
+	@Override
+	public void handleString(Block e, String key, String value) {
+		switch (key) {
+			case "creative_tab": {
+				e.setCreativeTab(ConfigUtil.getCreativeTab(value));
+				break;
+			}
+			case "localization_key": {
+				e.setUnlocalizedName(value);
+				break;
+			}
+			default:
+				throw new ConfigException("Property %s was not found", key);
+		}
 	}
 
 	@Override
@@ -48,6 +63,8 @@ public class BlockHandler implements ConfigHandler<Block> {
 				e.setLightOpacity(value.intValue());
 				break;
 			}
+			default:
+				throw new ConfigException("Property %s was not found", key);
 		}
 	}
 
@@ -61,6 +78,8 @@ public class BlockHandler implements ConfigHandler<Block> {
 				}
 				break;
 			}
+			default:
+				throw new ConfigException("Property %s was not found", key);
 		}
 	}
 
@@ -76,11 +95,13 @@ public class BlockHandler implements ConfigHandler<Block> {
 					}
 					int amount = config.hasPath("amount") ? config.getInt("amount") : 1;
 					int meta = config.hasPath("meta") ? config.getInt("meta") : 0;
-					NBTTagCompound nbt = config.hasPath("nbt") ? HoconUtil.createNBT(config.getConfig("nbt")) : null;
+					NBTTagCompound nbt = config.hasPath("nbt") ? ConfigUtil.createNBT(config.getConfig("nbt")) : null;
 					ModEventHandler.BLOCK_DROPS.get(e).add(new ItemStack(item, amount, meta, nbt));
 				}
 				break;
 			}
+			default:
+				throw new ConfigException("Property %s was not found", key);
 		}
 	}
 }

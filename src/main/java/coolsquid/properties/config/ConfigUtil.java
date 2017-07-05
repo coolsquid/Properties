@@ -1,15 +1,15 @@
-package coolsquid.properties.util;
+package coolsquid.properties.config;
 
 import java.util.Map.Entry;
 
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.nbt.NBTTagCompound;
-
-import coolsquid.properties.config.ConfigException;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValue;
 
-public class HoconUtil {
+public class ConfigUtil {
 
 	public static NBTTagCompound createNBT(Config config) {
 		NBTTagCompound nbt = new NBTTagCompound();
@@ -54,5 +54,15 @@ public class HoconUtil {
 			}
 		}
 		return nbt;
+	}
+
+	@SubscribeEvent
+	public static CreativeTabs getCreativeTab(String label) {
+		for (CreativeTabs tab : CreativeTabs.CREATIVE_TAB_ARRAY) {
+			if (label.equals(tab.getTabLabel())) {
+				return tab;
+			}
+		}
+		throw new ConfigException("Creative tab %s not found", label);
 	}
 }

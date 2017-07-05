@@ -15,6 +15,22 @@ public class ItemHandler implements ConfigHandler<Item> {
 	}
 
 	@Override
+	public void handleString(Item e, String key, String value) {
+		switch (key) {
+			case "creative_tab": {
+				e.setCreativeTab(ConfigUtil.getCreativeTab(value));
+				break;
+			}
+			case "localization_key": {
+				e.setUnlocalizedName(value);
+				break;
+			}
+			default:
+				throw new ConfigException("Property %s was not found", key);
+		}
+	}
+
+	@Override
 	public void handleNumber(Item e, String key, Number value) {
 		switch (key) {
 			case "max_damage": {
@@ -25,6 +41,8 @@ public class ItemHandler implements ConfigHandler<Item> {
 				e.setMaxStackSize(value.intValue());
 				break;
 			}
+			default:
+				throw new ConfigException("Property %s was not found", key);
 		}
 	}
 
@@ -38,6 +56,8 @@ public class ItemHandler implements ConfigHandler<Item> {
 				}
 				break;
 			}
+			default:
+				throw new ConfigException("Property %s was not found", key);
 		}
 	}
 }

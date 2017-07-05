@@ -1,6 +1,5 @@
 package coolsquid.properties;
 
-import net.minecraft.init.Blocks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -41,8 +40,6 @@ public class Properties {
 
 	@Mod.EventHandler
 	public void onPostInit(FMLPostInitializationEvent event) {
-		System.out.println(Blocks.COBBLESTONE.slipperiness);
 		ConfigManager.load();
-		System.out.println(Blocks.COBBLESTONE.slipperiness);
 	}
 }

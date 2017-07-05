@@ -53,6 +53,10 @@ public class ConfigManager {
 		for (String key : config.root().keySet()) {
 			List<? extends Config> list = config.getConfigList(key);
 			ConfigHandler handler = HANDLERS.get(key);
+			if (handler == null) {
+				addError(config.getValue(key).origin(), "No such handler %s", key);
+				continue;
+			}
 			for (Config entry : list) {
 				String name = entry.getString("name");
 				Object e = handler.getElement(name);

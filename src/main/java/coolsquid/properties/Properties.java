@@ -8,6 +8,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import coolsquid.properties.config.ConfigManager;
 import coolsquid.properties.config.handler.BlockHandler;
+import coolsquid.properties.config.handler.MobHandler;
 import coolsquid.properties.config.handler.ItemHandler;
 import coolsquid.properties.util.ModEventHandler;
 
@@ -34,6 +35,7 @@ public class Properties {
 	public void onInit(FMLInitializationEvent event) {
 		ConfigManager.registerHandler("blocks", new BlockHandler());
 		ConfigManager.registerHandler("items", new ItemHandler());
+		ConfigManager.registerHandler("mobs", new MobHandler());
 
 		MinecraftForge.EVENT_BUS.register(new ModEventHandler());
 	}

@@ -46,7 +46,7 @@ public class ModEventHandler {
 		if (data.clearDrops) {
 			event.getDrops().clear();
 		}
-		event.getDrops().removeIf((stack) -> data.dropsToRemove.contains(stack.getItem().getItem()));
+		event.getDrops().removeIf((stack) -> data.dropsToRemove.contains(stack.getEntityItem().getItem()));
 		for (ItemStack e : data.dropsToAdd) {
 			event.getDrops().add(new EntityItem(event.getEntity().world, event.getEntity().posX, event.getEntity().posY,
 					event.getEntity().posZ, e.copy()));

@@ -27,14 +27,15 @@ public class WarningHandler {
 	}
 
 	private void sendWarning(EntityPlayer player) {
-		player.sendMessage(new TextComponentString("<React> " + this.getErrorMessage()));
+		player.sendMessage(new TextComponentString("<Properties> " + this.getErrorMessage()));
 	}
 
 	private String getErrorMessage() {
 		if (this.errorCount == 1) {
-			return "There was 1 error during loading. See the React log for more information.";
+			return "There was 1 error during loading. See the Properties log for more information.";
 		} else {
-			return "There were " + this.errorCount + " errors during loading. See the React log for more information.";
+			return "There were " + this.errorCount
+					+ " errors during loading. See the Properties log for more information.";
 		}
 	}
 

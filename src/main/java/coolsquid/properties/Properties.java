@@ -8,8 +8,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import coolsquid.properties.config.ConfigManager;
 import coolsquid.properties.config.handler.BlockHandler;
-import coolsquid.properties.config.handler.MobHandler;
 import coolsquid.properties.config.handler.ItemHandler;
+import coolsquid.properties.config.handler.MobHandler;
 import coolsquid.properties.util.ModEventHandler;
 
 import org.apache.logging.log4j.LogManager;
@@ -20,7 +20,7 @@ public class Properties {
 
 	public static final String MODID = "properties";
 	public static final String NAME = "Properties";
-	public static final String VERSION = "1.0.0";
+	public static final String VERSION = "0.0.1";
 	public static final String DEPENDENCIES = "";
 	public static final String UPDATE_JSON = "";
 

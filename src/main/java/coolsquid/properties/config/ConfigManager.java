@@ -1,3 +1,4 @@
+
 package coolsquid.properties.config;
 
 import java.io.File;
@@ -64,8 +65,8 @@ public class ConfigManager {
 					for (String key2 : entry.root().keySet()) {
 						if (!"name".equals(key2)) {
 							ConfigValue finalValue = entry.getValue(key2);
-							//System.out.println(key2);
-							//System.out.println(finalValue.valueType());
+							// System.out.println(key2);
+							// System.out.println(finalValue.valueType());
 							try {
 								switch (finalValue.valueType()) {
 									case STRING: {
@@ -81,7 +82,14 @@ public class ConfigManager {
 										break;
 									}
 									case LIST: {
-										handler.handleList(e, key2, entry.getConfigList(key2));
+										List<?> l = entry.getAnyRefList(key2);
+										for (Object v : l) {
+											if (v instanceof String) {
+												handler.handleString(e, key2, (String) v);
+											} else if (v instanceof Config) {
+												handler.handleConfig(e, key2, (Config) v);
+											}
+										}
 										break;
 									}
 									case OBJECT: {
@@ -100,6 +108,7 @@ public class ConfigManager {
 				}
 			}
 		}
+
 	}
 
 	private static void addError(ConfigOrigin debug, String error, Object... args) {

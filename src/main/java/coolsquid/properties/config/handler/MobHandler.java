@@ -1,6 +1,5 @@
-package coolsquid.properties.config.handler;
 
-import java.util.List;
+package coolsquid.properties.config.handler;
 
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
@@ -61,20 +60,18 @@ public class MobHandler implements ConfigHandler<Class<? extends EntityLivingBas
 	}
 
 	@Override
-	public void handleList(Class<? extends EntityLivingBase> e, String key, List<? extends Config> value) {
+	public void handleConfig(Class<? extends EntityLivingBase> e, String key, Config value) {
 		switch (key) {
 			case "drops": {
-				for (Config config : value) {
-					Item item = Item.REGISTRY.getObject(new ResourceLocation(config.getString("item")));
-					if (config.hasPath("remove") && config.getBoolean("remove")) {
-						EntityData.getEntityData(e).dropsToRemove.add(item);
-						continue;
-					}
-					int amount = config.hasPath("amount") ? config.getInt("amount") : 1;
-					int meta = config.hasPath("meta") ? config.getInt("meta") : 0;
-					NBTTagCompound nbt = config.hasPath("nbt") ? ConfigUtil.createNBT(config.getConfig("nbt")) : null;
-					EntityData.getEntityData(e).dropsToAdd.add(new ItemStack(item, amount, meta, nbt));
+				Item item = Item.REGISTRY.getObject(new ResourceLocation(value.getString("item")));
+				if (value.hasPath("remove") && value.getBoolean("remove")) {
+					EntityData.getEntityData(e).dropsToRemove.add(item);
+					return;
 				}
+				int amount = value.hasPath("amount") ? value.getInt("amount") : 1;
+				int meta = value.hasPath("meta") ? value.getInt("meta") : 0;
+				NBTTagCompound nbt = value.hasPath("nbt") ? ConfigUtil.createNBT(value.getConfig("nbt")) : null;
+				EntityData.getEntityData(e).dropsToAdd.add(new ItemStack(item, amount, meta, nbt));
 				break;
 			}
 			default:

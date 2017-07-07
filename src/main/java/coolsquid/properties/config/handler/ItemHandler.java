@@ -1,6 +1,5 @@
-package coolsquid.properties.config.handler;
 
-import java.util.List;
+package coolsquid.properties.config.handler;
 
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
@@ -8,6 +7,7 @@ import net.minecraft.util.ResourceLocation;
 import coolsquid.properties.config.ConfigException;
 import coolsquid.properties.config.ConfigHandler;
 import coolsquid.properties.config.ConfigUtil;
+import coolsquid.properties.util.ModEventHandler;
 
 import com.typesafe.config.Config;
 
@@ -27,6 +27,10 @@ public class ItemHandler implements ConfigHandler<Item> {
 			}
 			case "localization_key": {
 				e.setUnlocalizedName(value);
+				break;
+			}
+			case "tooltip": {
+				ModEventHandler.ITEM_TOOLTIPS.put(e, value);
 				break;
 			}
 			default:
@@ -51,13 +55,11 @@ public class ItemHandler implements ConfigHandler<Item> {
 	}
 
 	@Override
-	public void handleList(Item e, String key, List<? extends Config> value) {
+	public void handleConfig(Item e, String key, Config value) {
 		switch (key) {
 			case "harvest_levels": {
-				for (Config config : value) {
-					// TODO make tool_class work
-					e.setHarvestLevel(config.getString("tool_class"), config.getInt("level"));
-				}
+				// TODO make tool_class work
+				e.setHarvestLevel(value.getString("tool_class"), value.getInt("level"));
 				break;
 			}
 			default:

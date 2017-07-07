@@ -1,3 +1,4 @@
+
 package coolsquid.properties.util;
 
 import java.util.HashSet;
@@ -12,6 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -26,6 +28,7 @@ public class ModEventHandler {
 	public static final ListMultimap<Block, ItemStack> BLOCK_DROPS = ArrayListMultimap.create();
 	public static final SetMultimap<Block, Item> REMOVE_BLOCK_DROPS = HashMultimap.create();
 	public static final Set<Block> REMOVE_ALL_BLOCK_DROPS = new HashSet<>();
+	public static final ListMultimap<Item, String> ITEM_TOOLTIPS = ArrayListMultimap.create();
 
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void addDrops(BlockEvent.HarvestDropsEvent event) {
@@ -93,6 +96,16 @@ public class ModEventHandler {
 				if (a != null) {
 					a.setBaseValue(data.armorThoughness);
 				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void tooltips(ItemTooltipEvent event) {
+		Item item = event.getItemStack() != null ? event.getItemStack().getItem() : null;
+		if (item != null) {
+			for (String tooltip : ITEM_TOOLTIPS.get(item)) {
+				event.getToolTip().add(tooltip);
 			}
 		}
 	}

@@ -1,6 +1,5 @@
-package coolsquid.properties.config;
 
-import java.util.List;
+package coolsquid.properties.config;
 
 import com.typesafe.config.Config;
 
@@ -18,10 +17,6 @@ public interface ConfigHandler<E> {
 
 	default void handleNumber(E e, String key, Number value) {
 		throw new ConfigException("Unsupported type number for option " + key);
-	}
-
-	default void handleList(E e, String key, List<? extends Config> value) {
-		throw new ConfigException("Unsupported type list for option " + key);
 	}
 
 	default void handleConfig(E e, String key, Config value) {

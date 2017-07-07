@@ -1,6 +1,5 @@
-package coolsquid.properties.config.handler;
 
-import java.util.List;
+package coolsquid.properties.config.handler;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -93,26 +92,16 @@ public class BlockHandler implements ConfigHandler<Block> {
 				}
 				break;
 			}
-			default:
-				throw new ConfigException("Property %s was not found", key);
-		}
-	}
-
-	@Override
-	public void handleList(Block e, String key, List<? extends Config> value) {
-		switch (key) {
 			case "drops": {
-				for (Config config : value) {
-					Item item = Item.REGISTRY.getObject(new ResourceLocation(config.getString("item")));
-					if (config.hasPath("remove") && config.getBoolean("remove")) {
-						ModEventHandler.REMOVE_BLOCK_DROPS.get(e).add(item);
-						continue;
-					}
-					int amount = config.hasPath("amount") ? config.getInt("amount") : 1;
-					int meta = config.hasPath("meta") ? config.getInt("meta") : 0;
-					NBTTagCompound nbt = config.hasPath("nbt") ? ConfigUtil.createNBT(config.getConfig("nbt")) : null;
-					ModEventHandler.BLOCK_DROPS.get(e).add(new ItemStack(item, amount, meta, nbt));
+				Item item = Item.REGISTRY.getObject(new ResourceLocation(value.getString("item")));
+				if (value.hasPath("remove") && value.getBoolean("remove")) {
+					ModEventHandler.REMOVE_BLOCK_DROPS.get(e).add(item);
+					return;
 				}
+				int amount = value.hasPath("amount") ? value.getInt("amount") : 1;
+				int meta = value.hasPath("meta") ? value.getInt("meta") : 0;
+				NBTTagCompound nbt = value.hasPath("nbt") ? ConfigUtil.createNBT(value.getConfig("nbt")) : null;
+				ModEventHandler.BLOCK_DROPS.get(e).add(new ItemStack(item, amount, meta, nbt));
 				break;
 			}
 			default:

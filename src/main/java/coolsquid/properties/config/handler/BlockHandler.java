@@ -3,6 +3,7 @@ package coolsquid.properties.config.handler;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -102,6 +103,10 @@ public class BlockHandler implements ConfigHandler<Block> {
 				int meta = value.hasPath("meta") ? value.getInt("meta") : 0;
 				NBTTagCompound nbt = value.hasPath("nbt") ? ConfigUtil.createNBT(value.getConfig("nbt")) : null;
 				ModEventHandler.BLOCK_DROPS.get(e).add(new ItemStack(item, amount, meta, nbt));
+				break;
+			}
+			case "flammability": {
+				Blocks.FIRE.setFireInfo(e, value.getInt("encouragement"), value.getInt("flammability"));
 				break;
 			}
 			default:

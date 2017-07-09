@@ -17,6 +17,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigOrigin;
 import com.typesafe.config.ConfigValue;
+import com.typesafe.config.ConfigValueFactory;
 
 public class ConfigManager {
 
@@ -86,8 +87,13 @@ public class ConfigManager {
 										for (Object v : l) {
 											if (v instanceof String) {
 												handler.handleString(e, key2, (String) v);
-											} else if (v instanceof Config) {
-												handler.handleConfig(e, key2, (Config) v);
+											} else if (v instanceof Map) {
+												handler.handleConfig(e, key2, ConfigValueFactory
+														.fromMap((Map<String, ? extends Object>) v).toConfig());
+											} else if (v instanceof Number) {
+												handler.handleNumber(e, key2, (Number) v);
+											} else if (v instanceof Boolean) {
+												handler.handleBoolean(e, key2, (Boolean) v);
 											}
 										}
 										break;

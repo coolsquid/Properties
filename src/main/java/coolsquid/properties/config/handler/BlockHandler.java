@@ -1,4 +1,3 @@
-
 package coolsquid.properties.config.handler;
 
 import net.minecraft.block.Block;
@@ -35,7 +34,7 @@ public class BlockHandler implements ConfigHandler<Block> {
 				break;
 			}
 			default:
-				throw new ConfigException("Property %s was not found", key);
+				this.missing(key);
 		}
 	}
 
@@ -47,7 +46,7 @@ public class BlockHandler implements ConfigHandler<Block> {
 				break;
 			}
 			default:
-				throw new ConfigException("Property %s was not found", key);
+				this.missing(key);
 		}
 	}
 
@@ -79,7 +78,7 @@ public class BlockHandler implements ConfigHandler<Block> {
 				break;
 			}
 			default:
-				throw new ConfigException("Property %s was not found", key);
+				this.missing(key);
 		}
 	}
 
@@ -110,7 +109,7 @@ public class BlockHandler implements ConfigHandler<Block> {
 				break;
 			}
 			default:
-				throw new ConfigException("Property %s was not found", key);
+				this.missing(key);
 		}
 	}
 }

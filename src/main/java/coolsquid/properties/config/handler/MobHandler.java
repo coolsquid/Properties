@@ -1,4 +1,3 @@
-
 package coolsquid.properties.config.handler;
 
 import net.minecraft.entity.EntityList;
@@ -8,7 +7,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
-import coolsquid.properties.config.ConfigException;
 import coolsquid.properties.config.ConfigHandler;
 import coolsquid.properties.config.ConfigUtil;
 import coolsquid.properties.util.EntityData;
@@ -43,7 +41,7 @@ public class MobHandler implements ConfigHandler<Class<? extends EntityLivingBas
 				break;
 			}
 			default:
-				throw new ConfigException("Property %s was not found", key);
+				this.missing(key);
 		}
 	}
 
@@ -55,7 +53,7 @@ public class MobHandler implements ConfigHandler<Class<? extends EntityLivingBas
 				break;
 			}
 			default:
-				throw new ConfigException("Property %s was not found", key);
+				this.missing(key);
 		}
 	}
 
@@ -75,7 +73,7 @@ public class MobHandler implements ConfigHandler<Class<? extends EntityLivingBas
 				break;
 			}
 			default:
-				throw new ConfigException("Property %s was not found", key);
+				this.missing(key);
 		}
 	}
 }

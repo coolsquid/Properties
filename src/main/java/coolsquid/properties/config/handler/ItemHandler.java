@@ -1,10 +1,8 @@
-
 package coolsquid.properties.config.handler;
 
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 
-import coolsquid.properties.config.ConfigException;
 import coolsquid.properties.config.ConfigHandler;
 import coolsquid.properties.config.ConfigUtil;
 import coolsquid.properties.util.ModEventHandler;
@@ -34,7 +32,7 @@ public class ItemHandler implements ConfigHandler<Item> {
 				break;
 			}
 			default:
-				throw new ConfigException("Property %s was not found", key);
+				this.missing(key);
 		}
 	}
 
@@ -50,7 +48,7 @@ public class ItemHandler implements ConfigHandler<Item> {
 				break;
 			}
 			default:
-				throw new ConfigException("Property %s was not found", key);
+				this.missing(key);
 		}
 	}
 
@@ -63,7 +61,7 @@ public class ItemHandler implements ConfigHandler<Item> {
 				break;
 			}
 			default:
-				throw new ConfigException("Property %s was not found", key);
+				this.missing(key);
 		}
 	}
 }

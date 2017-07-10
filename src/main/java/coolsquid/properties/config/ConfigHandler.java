@@ -1,4 +1,3 @@
-
 package coolsquid.properties.config;
 
 import com.typesafe.config.Config;
@@ -21,5 +20,9 @@ public interface ConfigHandler<E> {
 
 	default void handleConfig(E e, String key, Config value) {
 		throw new ConfigException("Unsupported type map for option " + key);
+	}
+
+	default void missing(String key) {
+		throw new ConfigException("Property %s was not found", key);
 	}
 }

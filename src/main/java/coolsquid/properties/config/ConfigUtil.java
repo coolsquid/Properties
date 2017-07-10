@@ -1,59 +1,64 @@
 package coolsquid.properties.config;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagDouble;
+import net.minecraft.nbt.NBTTagFloat;
+import net.minecraft.nbt.NBTTagInt;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagLong;
+import net.minecraft.nbt.NBTTagShort;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigValue;
 
 public class ConfigUtil {
 
 	public static NBTTagCompound createNBT(Config config) {
-		NBTTagCompound nbt = new NBTTagCompound();
-		for (Entry<String, ConfigValue> e : config.root().entrySet()) {
-			switch (e.getValue().valueType()) {
-				case BOOLEAN: {
-					nbt.setBoolean(e.getKey(), (boolean) e.getValue().unwrapped());
-					break;
-				}
-				case NULL: {
-					nbt.setTag(e.getKey(), null);
-					break;
-				}
-				case NUMBER: {
-					Number number = (Number) e.getValue().unwrapped();
-					if (number instanceof Byte) {
-						nbt.setByte(e.getKey(), number.byteValue());
-					} else if (number instanceof Short) {
-						nbt.setShort(e.getKey(), number.shortValue());
-					} else if (number instanceof Integer) {
-						nbt.setInteger(e.getKey(), number.intValue());
-					} else if (number instanceof Long) {
-						nbt.setLong(e.getKey(), number.longValue());
-					} else if (number instanceof Float) {
-						nbt.setFloat(e.getKey(), number.floatValue());
-					} else if (number instanceof Double) {
-						nbt.setDouble(e.getKey(), number.doubleValue());
-					}
-					break;
-				}
-				case OBJECT: {
-					nbt.setTag(e.getKey(), createNBT(config.getConfig(e.getKey())));
-					break;
-				}
-				case STRING: {
-					nbt.setString(e.getKey(), (String) e.getValue().unwrapped());
-					break;
-				}
-				default: {
-					throw new ConfigException("Unsupported type %s", e.getValue().valueType());
-				}
+		return (NBTTagCompound) createNBT(config.root().unwrapped());
+	}
+
+	private static NBTBase createNBT(Object obj) {
+		if (obj instanceof Boolean) {
+			return new NBTTagByte((byte) ((boolean) obj ? 1 : 0));
+		} else if (obj instanceof Number) {
+			Number number = (Number) obj;
+			if (number instanceof Byte) {
+				return new NBTTagByte(number.byteValue());
+			} else if (number instanceof Short) {
+				return new NBTTagShort(number.shortValue());
+			} else if (number instanceof Integer) {
+				return new NBTTagInt(number.intValue());
+			} else if (number instanceof Long) {
+				return new NBTTagLong(number.longValue());
+			} else if (number instanceof Float) {
+				return new NBTTagFloat(number.floatValue());
+			} else if (number instanceof Double) {
+				return new NBTTagDouble(number.doubleValue());
 			}
+		} else if (obj instanceof String) {
+			return new NBTTagString((String) obj);
+		} else if (obj instanceof Map) {
+			NBTTagCompound map = new NBTTagCompound();
+			for (Entry<?, ?> entry : ((Map<?, ?>) obj).entrySet()) {
+				map.setTag((String) entry.getKey(), createNBT(entry.getValue()));
+			}
+			return map;
+		} else if (obj instanceof List) {
+			NBTTagList list = new NBTTagList();
+			for (Object entry : (List<?>) obj) {
+				list.appendTag(createNBT(entry));
+			}
+			return list;
 		}
-		return nbt;
+		return null;
 	}
 
 	@SubscribeEvent

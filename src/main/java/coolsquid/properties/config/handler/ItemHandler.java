@@ -9,7 +9,7 @@ import coolsquid.properties.util.ModEventHandler;
 
 import com.typesafe.config.Config;
 
-public class ItemHandler implements ConfigHandler<Item> {
+public class ItemHandler extends ConfigHandler<Item> {
 
 	@Override
 	public Item getElement(String key) {
@@ -56,7 +56,7 @@ public class ItemHandler implements ConfigHandler<Item> {
 	public void handleConfig(Item e, String key, Config value) {
 		switch (key) {
 			case "harvest_levels": {
-				// TODO make tool_class work
+				// TODO make tool_class work properly
 				e.setHarvestLevel(value.getString("tool_class"), value.getInt("level"));
 				break;
 			}

@@ -5,11 +5,13 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
 import coolsquid.properties.config.ConfigManager;
 import coolsquid.properties.config.handler.BlockHandler;
 import coolsquid.properties.config.handler.ItemHandler;
 import coolsquid.properties.config.handler.MobHandler;
+import coolsquid.properties.util.CommandProperties;
 import coolsquid.properties.util.ModEventHandler;
 
 import org.apache.logging.log4j.LogManager;
@@ -43,5 +45,10 @@ public class Properties {
 	@Mod.EventHandler
 	public void onPostInit(FMLPostInitializationEvent event) {
 		ConfigManager.load();
+	}
+
+	@Mod.EventHandler
+	public void onInit(FMLServerStartingEvent event) {
+		event.registerServerCommand(new CommandProperties());
 	}
 }

@@ -13,7 +13,7 @@ import coolsquid.properties.util.EntityData;
 
 import com.typesafe.config.Config;
 
-public class MobHandler implements ConfigHandler<Class<? extends EntityLivingBase>> {
+public class MobHandler extends ConfigHandler<Class<? extends EntityLivingBase>> {
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -49,7 +49,7 @@ public class MobHandler implements ConfigHandler<Class<? extends EntityLivingBas
 	public void handleBoolean(Class<? extends EntityLivingBase> e, String key, boolean value) {
 		switch (key) {
 			case "clear_drops": {
-				EntityData.getEntityData(e).clearDrops = true;
+				EntityData.getEntityData(e).clearDrops = value;
 				break;
 			}
 			default:

@@ -17,7 +17,6 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigOrigin;
 import com.typesafe.config.ConfigValue;
-import com.typesafe.config.ConfigValueFactory;
 
 public class ConfigManager {
 
@@ -30,6 +29,9 @@ public class ConfigManager {
 	private static int errorCount = 0;
 
 	public static void load() {
+		for (ConfigHandler<?> handler : HANDLERS.values()) {
+			handler.reset();
+		}
 		if (!CONFIG_DIRECTORY.exists()) {
 			CONFIG_DIRECTORY.mkdirs();
 		}
@@ -69,43 +71,7 @@ public class ConfigManager {
 							// System.out.println(key2);
 							// System.out.println(finalValue.valueType());
 							try {
-								switch (finalValue.valueType()) {
-									case STRING: {
-										handler.handleString(e, key2, entry.getString(key2));
-										break;
-									}
-									case BOOLEAN: {
-										handler.handleBoolean(e, key2, entry.getBoolean(key2));
-										break;
-									}
-									case NUMBER: {
-										handler.handleNumber(e, key2, entry.getNumber(key2));
-										break;
-									}
-									case LIST: {
-										List<?> l = entry.getAnyRefList(key2);
-										for (Object v : l) {
-											if (v instanceof String) {
-												handler.handleString(e, key2, (String) v);
-											} else if (v instanceof Map) {
-												handler.handleConfig(e, key2, ConfigValueFactory
-														.fromMap((Map<String, ? extends Object>) v).toConfig());
-											} else if (v instanceof Number) {
-												handler.handleNumber(e, key2, (Number) v);
-											} else if (v instanceof Boolean) {
-												handler.handleBoolean(e, key2, (Boolean) v);
-											}
-										}
-										break;
-									}
-									case OBJECT: {
-										handler.handleConfig(e, key2, entry.getConfig(key2));
-										break;
-									}
-									default: {
-										throw new ConfigException("Unsupported type null");
-									}
-								}
+								handler.handle(key2, e, finalValue.unwrapped());
 							} catch (ConfigException e2) {
 								addError(finalValue.origin(), e2.getMessage());
 							}

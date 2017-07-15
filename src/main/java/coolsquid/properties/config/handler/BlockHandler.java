@@ -7,6 +7,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 import coolsquid.properties.config.ConfigException;
 import coolsquid.properties.config.ConfigHandler;
@@ -14,8 +15,10 @@ import coolsquid.properties.config.ConfigUtil;
 import coolsquid.properties.util.ModEventHandler;
 
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigValueFactory;
 
-public class BlockHandler implements ConfigHandler<Block> {
+public class BlockHandler extends ConfigHandler<Block> {
 
 	@Override
 	public Block getElement(String key) {
@@ -26,10 +29,12 @@ public class BlockHandler implements ConfigHandler<Block> {
 	public void handleString(Block e, String key, String value) {
 		switch (key) {
 			case "creative_tab": {
+				this.save(e.getCreativeTabToDisplayOn().getTabLabel());
 				e.setCreativeTab(ConfigUtil.getCreativeTab(value));
 				break;
 			}
 			case "localization_key": {
+				this.save(e.getUnlocalizedName());
 				e.setUnlocalizedName(value);
 				break;
 			}
@@ -42,7 +47,10 @@ public class BlockHandler implements ConfigHandler<Block> {
 	public void handleBoolean(Block e, String key, boolean value) {
 		switch (key) {
 			case "clear_drops": {
-				ModEventHandler.REMOVE_ALL_BLOCK_DROPS.add(e);
+				this.save(ModEventHandler.REMOVE_ALL_BLOCK_DROPS.contains(e));
+				if (value) {
+					ModEventHandler.REMOVE_ALL_BLOCK_DROPS.add(e);
+				}
 				break;
 			}
 			default:
@@ -50,18 +58,22 @@ public class BlockHandler implements ConfigHandler<Block> {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void handleNumber(Block e, String key, Number value) {
 		switch (key) {
 			case "hardness": {
+				this.save(ReflectionHelper.getPrivateValue(Block.class, e, 11));
 				e.setHardness(value.floatValue());
 				break;
 			}
 			case "resistance": {
+				this.save(ReflectionHelper.getPrivateValue(Block.class, e, 12));
 				e.setResistance(value.floatValue());
 				break;
 			}
 			case "slipperiness": {
+				this.save(e.slipperiness);
 				if (value.floatValue() < 0.1F) {
 					// causes world corruption
 					throw new ConfigException("Cannot set slipperiness to less than 0.1");
@@ -70,10 +82,12 @@ public class BlockHandler implements ConfigHandler<Block> {
 				break;
 			}
 			case "light_level": {
+				this.save(e.getLightValue(e.getDefaultState()));
 				e.setLightLevel(value.floatValue());
 				break;
 			}
 			case "light_opacity": {
+				this.save(e.getLightOpacity(e.getDefaultState()));
 				e.setLightOpacity(value.intValue());
 				break;
 			}
@@ -82,10 +96,13 @@ public class BlockHandler implements ConfigHandler<Block> {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void handleConfig(Block e, String key, Config value) {
 		switch (key) {
 			case "harvest_level": {
+				this.saveConfig("tool_class", e.getHarvestTool(e.getDefaultState()), "level",
+						e.getHarvestLevel(e.getDefaultState()));
 				for (IBlockState state : e.getBlockState().getValidStates()) {
 					// TODO make tool_class work
 					e.setHarvestLevel(value.getString("tool_class"), value.getInt("level"), state);
@@ -93,6 +110,12 @@ public class BlockHandler implements ConfigHandler<Block> {
 				break;
 			}
 			case "drops": {
+				this.save(null);
+				if (value == null) {
+					ModEventHandler.REMOVE_BLOCK_DROPS.get(e).clear();
+					ModEventHandler.BLOCK_DROPS.get(e).clear();
+					return;
+				}
 				Item item = Item.REGISTRY.getObject(new ResourceLocation(value.getString("item")));
 				if (value.hasPath("remove") && value.getBoolean("remove")) {
 					ModEventHandler.REMOVE_BLOCK_DROPS.get(e).add(item);
@@ -105,6 +128,9 @@ public class BlockHandler implements ConfigHandler<Block> {
 				break;
 			}
 			case "flammability": {
+				this.save(ConfigFactory.empty()
+						.withValue("encouragement", ConfigValueFactory.fromAnyRef(Blocks.FIRE.getEncouragement(e)))
+						.withValue("flammability", ConfigValueFactory.fromAnyRef(Blocks.FIRE.getFlammability(e))));
 				Blocks.FIRE.setFireInfo(e, value.getInt("encouragement"), value.getInt("flammability"));
 				break;
 			}

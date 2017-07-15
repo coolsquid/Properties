@@ -23,6 +23,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.event.ClickEvent;
 
 import coolsquid.properties.config.ConfigManager;
+import coolsquid.properties.network.PacketManager;
 
 import org.apache.commons.io.FileUtils;
 
@@ -46,6 +47,7 @@ public class CommandProperties extends CommandBase {
 			sender.sendMessage(new TextComponentString("<Properties> Too few parameters"));
 		} else if (args[0].equals("reload")) {
 			ConfigManager.load();
+			PacketManager.sendConfigsToClient(null);
 			sender.sendMessage(new TextComponentString("<Properties> Reloaded scripts"));
 		} else if (args[0].equals("dump")) {
 			if (args.length == 1) {

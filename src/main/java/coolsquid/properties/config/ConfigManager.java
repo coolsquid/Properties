@@ -26,12 +26,12 @@ public class ConfigManager {
 
 	private static final Map<String, ConfigHandler<?>> HANDLERS = new HashMap<>();
 
+	public static boolean syncConfigs = true;
+
 	private static int errorCount = 0;
 
 	public static void load() {
-		for (ConfigHandler<?> handler : HANDLERS.values()) {
-			handler.reset();
-		}
+		reset();
 		if (!CONFIG_DIRECTORY.exists()) {
 			CONFIG_DIRECTORY.mkdirs();
 		}
@@ -53,7 +53,12 @@ public class ConfigManager {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static void load(Config config) {
+	public static void load(Config config) {
+		if (config.hasPath("side")) {
+			if (Side.valueOf(config.getString("side").toUpperCase()) != FMLCommonHandler.instance().getSide()) {
+				return;
+			}
+		}
 		for (String key : config.root().keySet()) {
 			List<? extends Config> list = config.getConfigList(key);
 			ConfigHandler handler = HANDLERS.get(key);
@@ -81,6 +86,12 @@ public class ConfigManager {
 			}
 		}
 
+	}
+
+	public static void reset() {
+		for (ConfigHandler<?> handler : HANDLERS.values()) {
+			handler.reset();
+		}
 	}
 
 	private static void addError(ConfigOrigin debug, String error, Object... args) {

@@ -1,10 +1,6 @@
 
 package coolsquid.properties.util;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -21,26 +17,21 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ListMultimap;
-import com.google.common.collect.SetMultimap;
 
 public class ModEventHandler {
 
-	public static final ListMultimap<Block, ItemStack> BLOCK_DROPS = ArrayListMultimap.create();
-	public static final SetMultimap<Block, Item> REMOVE_BLOCK_DROPS = HashMultimap.create();
-	public static final Set<Block> REMOVE_ALL_BLOCK_DROPS = new HashSet<>();
 	public static final ListMultimap<Item, String> ITEM_TOOLTIPS = ArrayListMultimap.create();
 
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void addDrops(BlockEvent.HarvestDropsEvent event) {
-		if (REMOVE_ALL_BLOCK_DROPS.contains(event.getState().getBlock())) {
+		BlockData data = BlockData.getBlockData(event.getState().getBlock());
+		if (data.clearDrops) {
 			event.getDrops().clear();
 			return;
 		}
-		event.getDrops()
-				.removeIf((stack) -> REMOVE_BLOCK_DROPS.get(event.getState().getBlock()).contains(stack.getItem()));
-		for (ItemStack e : BLOCK_DROPS.get(event.getState().getBlock())) {
+		event.getDrops().removeIf((stack) -> data.dropsToRemove.contains(stack.getItem()));
+		for (ItemStack e : data.dropsToAdd) {
 			event.getDrops().add(e.copy());
 		}
 	}

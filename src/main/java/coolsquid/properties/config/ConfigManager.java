@@ -10,6 +10,8 @@ import java.util.Map;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 
+import coolsquid.properties.util.BlockData;
+import coolsquid.properties.util.EntityData;
 import coolsquid.properties.util.Log;
 import coolsquid.properties.util.WarningHandler;
 
@@ -89,6 +91,8 @@ public class ConfigManager {
 	}
 
 	public static void reset() {
+		BlockData.clear();
+		EntityData.clear();
 		for (ConfigHandler<?> handler : HANDLERS.values()) {
 			handler.reset();
 		}

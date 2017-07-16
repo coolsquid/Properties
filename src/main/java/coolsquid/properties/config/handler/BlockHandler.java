@@ -1,10 +1,14 @@
 package coolsquid.properties.config.handler;
 
+import java.lang.reflect.Field;
+import java.util.Set;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemTool;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
@@ -12,13 +16,21 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import coolsquid.properties.config.ConfigException;
 import coolsquid.properties.config.ConfigHandler;
 import coolsquid.properties.config.ConfigUtil;
-import coolsquid.properties.util.ModEventHandler;
+import coolsquid.properties.util.BlockData;
+import coolsquid.properties.util.Log;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
 
 public class BlockHandler extends ConfigHandler<Block> {
+
+	private static final Field EFFECTIVE_BLOCKS;
+
+	static {
+		EFFECTIVE_BLOCKS = ItemTool.class.getDeclaredFields()[0];
+		EFFECTIVE_BLOCKS.setAccessible(true);
+	}
 
 	@Override
 	public Block getElement(String key) {
@@ -47,9 +59,9 @@ public class BlockHandler extends ConfigHandler<Block> {
 	public void handleBoolean(Block e, String key, boolean value) {
 		switch (key) {
 			case "clear_drops": {
-				this.save(ModEventHandler.REMOVE_ALL_BLOCK_DROPS.contains(e));
+				this.save(BlockData.getBlockData(e).clearDrops);
 				if (value) {
-					ModEventHandler.REMOVE_ALL_BLOCK_DROPS.add(e);
+					BlockData.getBlockData(e).clearDrops = true;
 				}
 				break;
 			}
@@ -103,28 +115,32 @@ public class BlockHandler extends ConfigHandler<Block> {
 			case "harvest_level": {
 				this.saveConfig("tool_class", e.getHarvestTool(e.getDefaultState()), "level",
 						e.getHarvestLevel(e.getDefaultState()));
+				String toolClass = value.getString("tool_class");
 				for (IBlockState state : e.getBlockState().getValidStates()) {
-					// TODO make tool_class work
-					e.setHarvestLevel(value.getString("tool_class"), value.getInt("level"), state);
+					e.setHarvestLevel(e.getHarvestTool(state), -1, state);
+					e.setHarvestLevel(toolClass, value.getInt("level"), state);
+				}
+				for (Item item : Item.REGISTRY) {
+					if (item instanceof ItemTool && item.getToolClasses(new ItemStack(item)).contains(toolClass)) {
+						try {
+							((Set<Block>) EFFECTIVE_BLOCKS.get(item)).add(e);
+						} catch (IllegalArgumentException | IllegalAccessException e1) {
+							Log.catching(e1);
+						}
+					}
 				}
 				break;
 			}
 			case "drops": {
-				this.save(null);
-				if (value == null) {
-					ModEventHandler.REMOVE_BLOCK_DROPS.get(e).clear();
-					ModEventHandler.BLOCK_DROPS.get(e).clear();
-					return;
-				}
 				Item item = Item.REGISTRY.getObject(new ResourceLocation(value.getString("item")));
 				if (value.hasPath("remove") && value.getBoolean("remove")) {
-					ModEventHandler.REMOVE_BLOCK_DROPS.get(e).add(item);
+					BlockData.getBlockData(e).dropsToRemove.add(item);
 					return;
 				}
 				int amount = value.hasPath("amount") ? value.getInt("amount") : 1;
 				int meta = value.hasPath("meta") ? value.getInt("meta") : 0;
 				NBTTagCompound nbt = value.hasPath("nbt") ? ConfigUtil.createNBT(value.getConfig("nbt")) : null;
-				ModEventHandler.BLOCK_DROPS.get(e).add(new ItemStack(item, amount, meta, nbt));
+				BlockData.getBlockData(e).dropsToAdd.add(new ItemStack(item, amount, meta, nbt));
 				break;
 			}
 			case "flammability": {

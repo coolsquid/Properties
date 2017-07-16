@@ -56,4 +56,8 @@ public class EntityData {
 		EntityData data = ENTITY_DATA.get(type);
 		return data == null ? EMPTY : data;
 	}
+
+	public static void clear() {
+		ENTITY_DATA.clear();
+	}
 }

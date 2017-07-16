@@ -22,7 +22,7 @@ public class PacketManager {
 
 	public static void load() {
 		INSTANCE.registerMessage(PacketConfig.Handler.class, PacketConfig.class, 0, Side.CLIENT);
-		INSTANCE.registerMessage(PacketClean.Handler.class, PacketClean.class, 1, Side.CLIENT);
+		INSTANCE.registerMessage(PacketReset.Handler.class, PacketReset.class, 1, Side.CLIENT);
 	}
 
 	public static void sendConfigsToClient(EntityPlayer player) {
@@ -30,7 +30,7 @@ public class PacketManager {
 			if (player == null) {
 				Log.info("Sending configurations to %s clients",
 						FMLCommonHandler.instance().getMinecraftServerInstance().getCurrentPlayerCount());
-				INSTANCE.sendToAll(new PacketClean());
+				INSTANCE.sendToAll(new PacketReset());
 				for (File file : ConfigManager.CONFIG_DIRECTORY.listFiles(ConfigManager.CONFIG_FILE_FILTER)) {
 					try {
 						INSTANCE.sendToAll(new PacketConfig(FileUtils.readFileToByteArray(file)));
@@ -42,7 +42,7 @@ public class PacketManager {
 			} else {
 				Log.info("Sending configurations to player %s (%s)", player.getName(),
 						player.getCachedUniqueIdString());
-				INSTANCE.sendTo(new PacketClean(), (EntityPlayerMP) player);
+				INSTANCE.sendTo(new PacketReset(), (EntityPlayerMP) player);
 				for (File file : ConfigManager.CONFIG_DIRECTORY.listFiles(ConfigManager.CONFIG_FILE_FILTER)) {
 					try {
 						INSTANCE.sendTo(new PacketConfig(FileUtils.readFileToByteArray(file)), (EntityPlayerMP) player);

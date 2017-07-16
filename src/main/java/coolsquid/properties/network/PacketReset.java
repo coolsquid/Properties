@@ -10,7 +10,7 @@ import coolsquid.properties.config.ConfigManager;
 
 import io.netty.buffer.ByteBuf;
 
-public class PacketClean implements IMessage {
+public class PacketReset implements IMessage {
 
 	@Override
 	public void fromBytes(ByteBuf buf) {
@@ -22,10 +22,10 @@ public class PacketClean implements IMessage {
 
 	}
 
-	public static class Handler implements IMessageHandler<PacketClean, IMessage> {
+	public static class Handler implements IMessageHandler<PacketReset, IMessage> {
 
 		@Override
-		public IMessage onMessage(PacketClean message, MessageContext ctx) {
+		public IMessage onMessage(PacketReset message, MessageContext ctx) {
 			if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
 				ConfigManager.reset();
 			}

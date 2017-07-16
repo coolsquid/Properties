@@ -73,7 +73,7 @@ public abstract class ConfigHandler<E> {
 		this.currentKey = null;
 	}
 
-	void reset() {
+	protected void reset() {
 		List<Value> values = new ArrayList<>(this.values);
 		this.values.clear();
 		for (Value v : values) {

@@ -11,13 +11,25 @@ import coolsquid.properties.config.ConfigHandler;
 import coolsquid.properties.config.ConfigUtil;
 import coolsquid.properties.util.EntityData;
 
+import com.google.common.collect.Iterables;
 import com.typesafe.config.Config;
 
 public class MobHandler extends ConfigHandler<Class<? extends EntityLivingBase>> {
 
+	@Override
+	protected void reset() {
+		EntityData.clear();
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
-	public Class<? extends EntityLivingBase> getElement(String key) {
+	public Iterable<Class<? extends EntityLivingBase>> getElements() {
+		return Iterables.transform(EntityList.getEntityNameList(),
+				(n) -> (Class<? extends EntityLivingBase>) EntityList.getClass(n));
+	}
+
+	@Override
+	protected Class<? extends EntityLivingBase> getElement(String key) {
 		return (Class<? extends EntityLivingBase>) EntityList.getClass(new ResourceLocation(key));
 	}
 

@@ -3,15 +3,16 @@ package coolsquid.properties.config;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 
-import coolsquid.properties.util.BlockData;
-import coolsquid.properties.util.EntityData;
 import coolsquid.properties.util.Log;
 import coolsquid.properties.util.WarningHandler;
 
@@ -69,18 +70,31 @@ public class ConfigManager {
 				continue;
 			}
 			for (Config entry : list) {
-				String name = entry.getString("name");
-				Object e = handler.getElement(name);
-				if (e != null) {
+				Set<Entry<String, Object>> conditions = entry.hasPath("conditions")
+						? ((Map<String, Object>) entry.getAnyRef("conditions")).entrySet() : Collections.emptySet();
+				Iterable<?> elements;
+				if (entry.hasPath("name")) {
+					elements = Collections.singleton(handler.getElement(entry.getString("name")));
+				} else {
+					elements = handler.getElements();
+				}
+				if (elements != null) {
 					for (String key2 : entry.root().keySet()) {
-						if (!"name".equals(key2)) {
+						if (!"name".equals(key2) && !"conditions".equals(key2)) {
 							ConfigValue finalValue = entry.getValue(key2);
 							// System.out.println(key2);
 							// System.out.println(finalValue.valueType());
-							try {
-								handler.handle(key2, e, finalValue.unwrapped());
-							} catch (ConfigException e2) {
-								addError(finalValue.origin(), e2.getMessage());
+							l1: for (Object element : elements) {
+								for (Entry<String, Object> condition : conditions) {
+									if (!handler.check(condition.getKey(), element, condition.getValue())) {
+										continue l1;
+									}
+								}
+								try {
+									handler.handle(key2, element, finalValue.unwrapped());
+								} catch (ConfigException e2) {
+									addError(finalValue.origin(), e2.getMessage());
+								}
 							}
 						}
 					}
@@ -91,8 +105,6 @@ public class ConfigManager {
 	}
 
 	public static void reset() {
-		BlockData.clear();
-		EntityData.clear();
 		for (ConfigHandler<?> handler : HANDLERS.values()) {
 			handler.reset();
 		}

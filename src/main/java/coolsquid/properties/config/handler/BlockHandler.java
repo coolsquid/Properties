@@ -33,7 +33,17 @@ public class BlockHandler extends ConfigHandler<Block> {
 	}
 
 	@Override
-	public Block getElement(String key) {
+	protected void reset() {
+		BlockData.clear();
+	}
+
+	@Override
+	public Iterable<Block> getElements() {
+		return Block.REGISTRY;
+	}
+
+	@Override
+	protected Block getElement(String key) {
 		return Block.REGISTRY.getObject(new ResourceLocation(key));
 	}
 
@@ -59,10 +69,20 @@ public class BlockHandler extends ConfigHandler<Block> {
 	public void handleBoolean(Block e, String key, boolean value) {
 		switch (key) {
 			case "clear_drops": {
-				this.save(BlockData.getBlockData(e).clearDrops);
-				if (value) {
-					BlockData.getBlockData(e).clearDrops = true;
-				}
+				BlockData.getBlockData(e).clearDrops = value;
+				break;
+			}
+			case "placeable": {
+				BlockData.getBlockData(e).placeable = value;
+				break;
+			}
+			case "breakable": {
+				BlockData.getBlockData(e).breakable = value;
+				break;
+			}
+			case "infinite_source": {
+				BlockData.getBlockData(e).infiniteSource = (byte) (value ? 1 : 2);
+				System.out.println("uigfduibgers");
 				break;
 			}
 			default:

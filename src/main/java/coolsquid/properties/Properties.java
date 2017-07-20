@@ -16,6 +16,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import coolsquid.properties.config.ConfigManager;
+import coolsquid.properties.config.handler.BiomeHandler;
 import coolsquid.properties.config.handler.BlockHandler;
 import coolsquid.properties.config.handler.ItemHandler;
 import coolsquid.properties.config.handler.MobHandler;
@@ -48,9 +49,12 @@ public class Properties {
 		ConfigManager.registerHandler("blocks", new BlockHandler());
 		ConfigManager.registerHandler("items", new ItemHandler());
 		ConfigManager.registerHandler("mobs", new MobHandler());
+		ConfigManager.registerHandler("biomes", new BiomeHandler());
 
 		MinecraftForge.EVENT_BUS.register(this);
-		MinecraftForge.EVENT_BUS.register(new ModEventHandler());
+		Object handler = new ModEventHandler();
+		MinecraftForge.EVENT_BUS.register(handler);
+		MinecraftForge.TERRAIN_GEN_BUS.register(handler);
 
 		PacketManager.load();
 	}

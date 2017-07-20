@@ -24,6 +24,9 @@ public class BlockData {
 	public List<ItemStack> dropsToAdd;
 	public Set<Item> dropsToRemove;
 	public boolean clearDrops = false;
+	public boolean breakable = true;
+	public boolean placeable = true;
+	public byte infiniteSource = 0;
 
 	public BlockData() {
 		this(new ArrayList<>(), new HashSet<>());

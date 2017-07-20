@@ -10,7 +10,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.event.terraingen.BiomeEvent;
+import net.minecraftforge.event.terraingen.OreGenEvent;
 import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -101,6 +104,63 @@ public class ModEventHandler {
 			for (String tooltip : ITEM_TOOLTIPS.get(item)) {
 				event.getToolTip().add(tooltip);
 			}
+		}
+	}
+
+	@SubscribeEvent
+	public void getBiomeColor(BiomeEvent.BiomeColor event) {
+		BiomeData data = BiomeData.getBiomeData(event.getBiome());
+		if (event instanceof BiomeEvent.GetFoliageColor && data.foliageColor != -1) {
+			event.setNewColor(data.foliageColor);
+		}
+		if (event instanceof BiomeEvent.GetGrassColor && data.grassColor != -1) {
+			event.setNewColor(data.grassColor);
+		}
+		if (event instanceof BiomeEvent.GetWaterColor && data.waterColor != -1) {
+			event.setNewColor(data.waterColor);
+		}
+	}
+
+	@SubscribeEvent
+	public void getVillageBlock(BiomeEvent.GetVillageBlockID event) {
+		BiomeData data = BiomeData.getBiomeData(event.getBiome());
+		if (data.villageBlock != null) {
+			event.setReplacement(data.villageBlock);
+			event.setResult(Result.DENY);
+		}
+	}
+
+	@SubscribeEvent
+	public void onGenerate(OreGenEvent.GenerateMinable event) {
+		BiomeData data = BiomeData.getBiomeData(event.getWorld().getBiome(event.getPos()));
+		if (data.disabledMinables.contains(event.getType())) {
+			event.setResult(Result.DENY);
+		}
+	}
+
+	@SubscribeEvent
+	public void onBlockBroken(BlockEvent.BreakEvent event) {
+		BlockData data = BlockData.getBlockData(event.getState().getBlock());
+		if (!data.breakable) {
+			event.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent
+	public void onBlockPlaced(BlockEvent.PlaceEvent event) {
+		BlockData data = BlockData.getBlockData(event.getState().getBlock());
+		if (!data.placeable) {
+			event.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent
+	public void onSourceCreation(BlockEvent.CreateFluidSourceEvent event) {
+		BlockData data = BlockData.getBlockData(event.getState().getBlock());
+		if (data.infiniteSource == 1) {
+			event.setResult(Result.ALLOW);
+		} else if (data.infiniteSource == 2) {
+			event.setResult(Result.DENY);
 		}
 	}
 }
